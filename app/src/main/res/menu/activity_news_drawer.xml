@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/topstories"
+            android:icon="@drawable/t"
+            android:title="Top Stories" />
+        <item
+            android:id="@+id/sports"
+            android:icon="@drawable/football"
+            android:title="Sports" />
+        <item
+            android:id="@+id/india"
+            android:icon="@drawable/tajmahal"
+            android:title="India" />
+        <item
+            android:id="@+id/world"
+            android:icon="@drawable/globe"
+            android:title="World" />
+        <item
+            android:id="@+id/entertainment"
+            android:icon="@drawable/movies"
+            android:title="Entertainment" />
+        <item
+            android:id="@+id/business"
+            android:icon="@drawable/business"
+            android:title="Business" />
+        <item
+            android:id="@+id/tech"
+            android:icon="@drawable/technology"
+            android:title="Technology" />
+        <item
+            android:id="@+id/science"
+            android:icon="@drawable/science"
+            android:title="Science" />
+        <item
+            android:id="@+id/health"
+            android:icon="@drawable/health"
+            android:title="Health" />
+    </group>
+
+    <!--   <item android:title="Communicate">
+           <menu>
+               <item
+                   android:id="@+id/nav_share"
+                   android:icon="@drawable/ic_menu_share"
+                   android:title="Share" />
+               <item
+                   android:id="@+id/nav_send"
+                   android:icon="@drawable/ic_menu_send"
+                   android:title="Send" />
+           </menu>
+       </item>-->
+
+</menu>

@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Highs</string>
+    <string name="top_stories">Top Highs</string>
+    <string name="sports">Sport highs</string>
+    <string name="india">Indian highs</string>
+    <string name="world">Worldly highs</string>
+    <string name="entertainment">Entertainment highs</string>
+    <string name="business">Business highs</string>
+    <string name="technology">Technology highs</string>
+    <string name="science">Science highs</string>
+    <string name="health">Healthy highs</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+</resources>

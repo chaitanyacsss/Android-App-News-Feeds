@@ -1,0 +1,15 @@
+TODO FIXES :
+
+* 1) Fix title placement in nav_header_news - Done
+
+* 1) side menu for categories (Navigation  drawer) - DONE!
+* 3) home page css fix -done
+* 4) internet connectivity failure check -done
+* 10) fix youTube broken links - done
+* 6) Fix refresh bar - DONE
+* 1) Fix YouTube and others - DONE
+* 3) Load Progress - Done
+* 12)local progress bar for extraDesc loading - Done
+* 6) check recyclerView3 for rest of the fixes - Done
+* 3) logos for categories - Done
+* 1) RecyclerView location click intercept bug - Done

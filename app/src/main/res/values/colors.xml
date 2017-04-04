@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="year">#999999</color>
+    <color name="title">#292929</color>
+    <color name="topics">#ffffff</color>
+    <color name="color_preloader_start">#000000</color>
+    <color name="color_preloader_center">#000000</color>
+    <color name="color_preloader_end">#cfcfcf</color>
+    <color name="app_primary_light">@android:color/holo_red_light</color>
+    <color name="app_primary_dark">@android:color/holo_red_dark</color>
+</resources>
