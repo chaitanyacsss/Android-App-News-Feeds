@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
 * 7) group similar articles
 * 8) varied/multiple sources
 * 9) side swipe for category shift
-* 10)url Updates fetching-cron like job
+* 10)url Updates fetching - cron like job
 * 11)integrate webView to card
 * 12)Summarize article!*/
 public class NewsActivity extends AppCompatActivity
@@ -132,8 +132,8 @@ public class NewsActivity extends AppCompatActivity
                         @Override
                         public void onClick(View v) {
                             toggleViewVisibility(cardUrlView);
-                            callContentExtraction(extendedDesc, cardUrlView, cardDescription, cardTitle, cardDate, cardImage, dotProgressBar);
-                            //callWebViewActivity(cardUrlView);
+                            //callContentExtraction(extendedDesc, cardUrlView, cardDescription, cardTitle, cardDate, cardImage, dotProgressBar);
+                            callWebViewActivity(cardUrlView);
                         }
                     });
                 }

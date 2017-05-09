@@ -6,9 +6,9 @@
     <color name="year">#999999</color>
     <color name="title">#292929</color>
     <color name="topics">#ffffff</color>
-    <color name="color_preloader_start">#000000</color>
-    <color name="color_preloader_center">#000000</color>
-    <color name="color_preloader_end">#cfcfcf</color>
+    <color name="color_preloader_start">@android:color/holo_red_light</color>
+    <color name="color_preloader_center">@android:color/holo_red_dark</color>
+    <color name="color_preloader_end">#ffffff</color>
     <color name="app_primary_light">@android:color/holo_red_light</color>
     <color name="app_primary_dark">@android:color/holo_red_dark</color>
 </resources>

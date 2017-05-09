@@ -1,10 +1,13 @@
 package com.home.chaitu.highs.ui;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -12,10 +15,13 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.home.chaitu.highs.R;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,17 +38,21 @@ public class WebViewActivity extends AppCompatActivity {
     private Handler progressBarHandler = new Handler();
     String NON_YOUTUBE_URL = "nonyoutubeurl";
     public static final String YOUTUBE_URL_REGEX = "https?:\\/\\/(?:[0-9A-Z-]+\\.)?(?:youtu\\.be\\/|youtube\\.com\\S*[^\\w\\-\\s])([\\w\\-]{11})(?=[^\\w\\-]|$)(?![?=&+%\\w]*(?:['\"][^<>]*>|<\\/a>))[?=&+%\\w]*";
-
+    TextView title = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setUrl(savedInstanceState);
         setContentView(R.layout.web_view);
-        /*Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);*/
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        title = (TextView) toolbar.findViewById(R.id.toolbar_title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
         webView = (WebView) findViewById(R.id.webView1);
         webView.getSettings().setJavaScriptEnabled(true);
+        webView.setBackgroundColor(Color.TRANSPARENT);
     }
 
     @Override
@@ -70,6 +80,11 @@ public class WebViewActivity extends AppCompatActivity {
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 webViewProgressBar.setVisibility(View.VISIBLE);
                 super.onPageStarted(view, url, favicon);
+                try {
+                    setTitle(url);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -77,19 +92,30 @@ public class WebViewActivity extends AppCompatActivity {
                 webViewProgressBar.setVisibility(View.GONE);
                 super.onPageFinished(view, url);
             }
-
-
         });
         if (getYoutubeId(url).equals(NON_YOUTUBE_URL)) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
             webView.loadUrl(url);
         } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             String youTubeId = getYoutubeId(url);
             Log.d("onStart: ", youTubeId);
             String playVideo = "<iframe class=\"youtube-player\" allowtransparency=\"true\" style=\" border: 0; width: 100%; height: 50%; padding:0px; margin:0px\" type=\"text/html\"frameborder=\"0\" src=\"http://www.youtube.com/embed/" + youTubeId + "\"></iframe>";
             webView.loadData(playVideo, "text/html", "utf-8");
+            try {
+                setTitle(url);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
+
+    private void setTitle(String urlString) throws MalformedURLException {
+        URL url = new URL(urlString);
+        String base = url.getHost();
+        title.setText(base);
+    }
 
     private void setUrl(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
@@ -133,5 +159,11 @@ public class WebViewActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
+    }
 
 }
