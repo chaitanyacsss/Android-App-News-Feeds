@@ -1,3 +1,3 @@
 # Highs
-
--- Google Rss feeds to be updated
+- A simple RSS based news app.
+- Updated google RSS feeds!
