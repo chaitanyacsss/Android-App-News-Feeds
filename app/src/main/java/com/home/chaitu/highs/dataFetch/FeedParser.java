@@ -11,6 +11,7 @@ import android.sax.RootElement;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.Xml;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -20,7 +21,10 @@ import com.home.chaitu.highs.model.NewsItem;
 import com.home.chaitu.highs.ui.adapter.NewsAdapter;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -38,6 +42,7 @@ import java.util.regex.Pattern;
  */
 public class FeedParser extends AsyncTask {
 
+    public static final String FEED_PARSER = "FeedParser";
     private URL feedUrl;
     static final String RSS = "rss";
     static final String CHANNEL = "channel";
@@ -64,10 +69,14 @@ public class FeedParser extends AsyncTask {
     protected Object doInBackground(Object... feedUrlString) {
         try {
             feedUrl = new URL(feedUrlString[0].toString());
+            //feedUrl = new URL("http://rss.nytimes.com/services/xml/rss/nyt/World.xml");
+            //news = parse(Boolean.TRUE);
             news = parse();
 
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -96,6 +105,7 @@ public class FeedParser extends AsyncTask {
             }
 
         } catch (Exception e) {
+            Log.d(FEED_PARSER, "getInputStream: " + e.toString());
         }
         return inputStream;
     }
@@ -115,7 +125,9 @@ public class FeedParser extends AsyncTask {
         Element item = itemList.getChild(ITEM);
         item.getChild(TITLE).setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
-                currentMessage.setTitle(getTitle(body).get(0));
+                //currentMessage.setTitle(getTitle(body).get(0));
+                currentMessage.setTitle(body.trim());
+                //Log.d(FEED_PARSER, "inside title: " + " title: " + getTitle(body).get(0));
             }
         });
         item.getChild(LINK).setEndTextElementListener(new EndTextElementListener() {
@@ -130,7 +142,9 @@ public class FeedParser extends AsyncTask {
         item.getChild(DESCRIPTION).setEndTextElementListener(new EndTextElementListener() {
             public void end(String body) {
                 currentMessage.setImageUrl(getImageUrl(body));
-                currentMessage.setDescription(getDescription(body));
+                // currentMessage.setDescription(getDescription(body));
+                currentMessage.setDescription(null);
+                //Log.d(FEED_PARSER, "inside description: " + " Image: " + getImageUrl(body));
             }
         });
         item.getChild(PUB_DATE).setEndTextElementListener(new EndTextElementListener() {
@@ -145,14 +159,87 @@ public class FeedParser extends AsyncTask {
         });
         try {
             if (this.getInputStream() != null) {
+                //Log.d(FEED_PARSER, "parse inside: " + " url: " + this.feedUrl);
                 Xml.parse(this.getInputStream(), Xml.Encoding.UTF_8, root.getContentHandler());
+            } else {
+                //Toast.makeText(context, "No data received !", Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            // throw new RuntimeException(e);
-            //  Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG);
+            Log.d(FEED_PARSER, "Error in parse: " + e.toString() + " url: " + this.feedUrl);
         }
         return messages;
     }
+
+
+    public List<NewsItem> parse(Boolean t) throws IOException, XmlPullParserException {
+        XmlPullParser parser = Xml.newPullParser();
+        InputStream inputStream = this.getInputStream();
+        final List<NewsItem> messages = new ArrayList<>();
+        try {
+            parser.setInput(inputStream, null);
+            int eventType = parser.getEventType();
+            boolean done = false;
+            NewsItem currentMessage = new NewsItem();
+            while (eventType != XmlPullParser.END_DOCUMENT && !done) {
+                String name = null;
+                switch (eventType) {
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
+                    case XmlPullParser.START_TAG:
+                        name = parser.getName();
+                        if (name.equalsIgnoreCase(ITEM)) {
+                            Log.i("new item", "Create new item");
+                            currentMessage = new NewsItem();
+                        } else if (currentMessage != null) {
+                            if (name.equalsIgnoreCase(LINK)) {
+                                Log.i("Attribute", "setLink");
+                                //currentMessage.setLink(parser.nextText());
+                                currentMessage.setURL(getStoryUrl(parser.nextText()));
+                            } else if (name.equalsIgnoreCase(DESCRIPTION)) {
+                                Log.i("Attribute", "description");
+                                //currentMessage.setDescription(parser.nextText().trim());
+                                String text = parser.nextText();
+                                currentMessage.setImageUrl(getImageUrl(text));
+                                currentMessage.setDescription(getDescription(text));
+                            } else if (name.equalsIgnoreCase(PUB_DATE)) {
+                                Log.i("Attribute", "date");
+                                currentMessage.setDate(parser.nextText());
+                            } else if (name.equalsIgnoreCase(TITLE)) {
+                                Log.i("Attribute", "title");
+                                //currentMessage.setTitle(getTitle(parser.nextText()).get(0));
+                                currentMessage.setTitle(parser.nextText().trim());
+                            }
+                        }
+                        break;
+                    case XmlPullParser.END_TAG:
+                        name = parser.getName();
+                        Log.i("End tag", name);
+                        if (name.equalsIgnoreCase(ITEM) && currentMessage != null) {
+                            Log.i("Added", currentMessage.toString());
+                            messages.add(currentMessage);
+                        } else if (name.equalsIgnoreCase(CHANNEL)) {
+                            done = true;
+                        }
+                        break;
+                }
+                eventType = parser.next();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally
+
+        {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return messages;
+    }
+
 
     private List<String> getTitle(String body) {
         int titleLength = body.lastIndexOf("- ");
@@ -165,10 +252,12 @@ public class FeedParser extends AsyncTask {
         return Arrays.asList(title, site);
     }
 
-
+    /*TODO fix description*/
     private String getDescription(String body) {
         List<String> descriptionList = Arrays.asList(StringEscapeUtils.unescapeXml(body).split("\\s*<br><font size=\"-1\">\\s*"));
-        String description = descriptionList.get(2);
+        Log.d(FEED_PARSER, "getDescription: " + descriptionList.toString());
+        Log.d(FEED_PARSER, "getDescription whole body: " + body);
+        String description = descriptionList.get(descriptionList.size() - 1);
         int i = description.lastIndexOf(". ");
         if (i < (description.length() - 1) && i != -1) {
             description = description.substring(0, i + 1);
@@ -223,6 +312,7 @@ public class FeedParser extends AsyncTask {
                 }
             }
         }
+        //Log.d(FEED_PARSER, "getImageUrl: " + imageUrlString);
         return imageUrlString;
     }
 

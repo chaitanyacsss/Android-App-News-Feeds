@@ -46,10 +46,12 @@ import java.util.regex.Pattern;
 public class NewsActivity extends AppCompatActivity
         implements ActivityBase {
 
-    public static final String OUTPUT_RSS = "&output=rss";
     public static String FEED_URL_FINAL;
-    static String FEED_URL_STRING = "https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in";
-    static String AND_TOPIC = "&topic=";
+    //static String FEED_URL_STRING = "https://news.google.co.in/news?cf=all&hl=en&pz=1&ned=in";
+    static String FEED_URL_STRING = "https://news.google.com/news/rss/headlines/section/topic/";
+    static String NO_TOPIC_FEED = "https://news.google.com/news/rss/?ned=in&hl=en-IN&gl=IN";
+    //static String AND_TOPIC = "&topic=";
+    public static final String OUTPUT_RSS = "?ned=in&hl=en-IN&gl=IN";
     static String topic = null;
     private RecyclerView recyclerView;
     static String feedUrlString;
@@ -90,7 +92,12 @@ public class NewsActivity extends AppCompatActivity
 
     private void setFeedUrlString() {
         if (FEED_URL_FINAL == null) {
-            FEED_URL_FINAL = FEED_URL_STRING + AND_TOPIC + topic + OUTPUT_RSS;
+            //FEED_URL_FINAL = FEED_URL_STRING + AND_TOPIC + topic + OUTPUT_RSS;
+            FEED_URL_FINAL = FEED_URL_STRING + topic + OUTPUT_RSS;
+            if(topic == null){
+                FEED_URL_FINAL = NO_TOPIC_FEED;
+                Toast.makeText(this,"Headlines",Toast.LENGTH_LONG);
+            }
         }
         this.feedUrlString = FEED_URL_FINAL;
         //log.d(TAG, "setFeedUrlString: " + FEED_URL_FINAL);
@@ -237,27 +244,32 @@ public class NewsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.topstories) {
-            topic = "null";
+            topic = null;
             //log.d(TAG, "onNavigationItemSelected: ");
         } else if (id == R.id.sports) {
-            topic = "s";
+            topic = "SPORTS/Sports";
         } else if (id == R.id.india) {
-            topic = "n";
+            topic = "NATION.en_in/India";
         } else if (id == R.id.world) {
-            topic = "w";
+            topic = "WORLD.en_in/World";
         } else if (id == R.id.entertainment) {
-            topic = "e";
+            topic = "ENTERTAINMENT.en_in/Entertainment";
         } else if (id == R.id.business) {
-            topic = "b";
+            topic = "BUSINESS.en_in/Business";
         } else if (id == R.id.tech) {
-            topic = "tc";
+            topic = "TECHNOLOGY.en_in/Technology";
         } else if (id == R.id.science) {
-            topic = "snc";
+            topic = "SCIENCE.en_in/Science";
         } else if (id == R.id.health) {
-            topic = "m";
+            topic = "HEALTH.en_in/Health";
         }
         //log.d(TAG, "onNavigationItemSelected: ");
-        this.FEED_URL_FINAL = FEED_URL_STRING + AND_TOPIC + topic + OUTPUT_RSS;
+        //this.FEED_URL_FINAL = FEED_URL_STRING + AND_TOPIC + topic + OUTPUT_RSS;
+
+        this.FEED_URL_FINAL = FEED_URL_STRING + topic + OUTPUT_RSS;
+        if (topic == null){
+            this.FEED_URL_FINAL = NO_TOPIC_FEED;
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         setFeedUrlString();
